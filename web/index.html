@@ -13,21 +13,64 @@
   <a class="skip" href="#main">Skip to content</a>
   <header><a href="https://coolcode.ca/">← CoolCode.ca</a><a href="{{SOURCE_URL}}">Source &amp; instructions ↗</a></header>
   <main id="main">
-    <p class="eyebrow">Browser tool starter</p>
+    <p class="eyebrow">Networks &amp; routing · registry, certificate and archive records</p>
     <h1>{{TITLE}}</h1>
     <p class="intro">{{DESCRIPTION}}</p>
-    <section aria-labelledby="example-title">
-      <h2 id="example-title">Clean a list</h2>
-      <p>Trim spaces, skip blank lines and remove exact duplicates. Capitalization stays distinct.</p>
-      <div class="panels">
-        <div><label for="input">Your lines</label><textarea id="input" rows="10" maxlength="100000" spellcheck="false" placeholder="Paste one item per line"></textarea></div>
-        <div><label for="output">Cleaned lines</label><textarea id="output" rows="10" readonly spellcheck="false"></textarea></div>
-      </div>
-      <div class="actions"><button id="sample" type="button">Load example</button><button id="clear" type="button">Clear</button><button id="copy" type="button" hidden>Copy result</button></div>
-      <p id="status" role="status" aria-live="polite">Paste a list to begin.</p>
-      <noscript><p>This tool needs JavaScript to process your text. The source is available above.</p></noscript>
+
+    <section aria-labelledby="lookup-title">
+      <h2 id="lookup-title">Look up a domain</h2>
+      <form id="lookup" class="lookup">
+        <label for="domain">Domain name</label>
+        <div class="row">
+          <input id="domain" name="domain" autocomplete="off" spellcheck="false" placeholder="cira.ca" maxlength="260" required>
+          <button type="submit">Trace history</button>
+        </div>
+        <label class="check"><input type="checkbox" id="subdomains"> Include subdomain certificates <span class="hint">(slower on large sites)</span></label>
+        <p class="examples" id="examples"></p>
+      </form>
+      <p id="status" role="status" aria-live="polite"></p>
+      <noscript><p>This tool needs JavaScript to query the registry, certificate logs and the Wayback Machine.</p></noscript>
     </section>
-    <aside aria-label="Privacy"><strong>Stays on your device.</strong> The browser processes your text in this tab. Reloading clears it.</aside>
+
+    <div id="result" hidden>
+      <section aria-labelledby="summary-title">
+        <h2 id="summary-title">At a glance</h2>
+        <div class="stats" id="stats"></div>
+        <div class="sources" id="sources"></div>
+      </section>
+
+      <section aria-labelledby="timeline-title">
+        <h2 id="timeline-title">Timeline</h2>
+        <ol class="timeline" id="timeline"></ol>
+      </section>
+
+      <section aria-labelledby="years-title">
+        <h2 id="years-title">Activity by year</h2>
+        <p class="small">Certificates logged per year, and months with at least one Wayback capture. A quiet period is two or more years in which none of the sources recorded anything.</p>
+        <div class="chart" id="chart"></div>
+        <p class="legend"><span><i class="dot certs"></i>Certificates</span><span><i class="dot caps"></i>Months with captures</span><span><i class="dot quiet"></i>Quiet period</span></p>
+        <p id="quiet" class="small"></p>
+      </section>
+
+      <div class="pair">
+        <section aria-labelledby="registry-title">
+          <h2 id="registry-title">Registry record</h2>
+          <dl id="registry" class="facts"></dl>
+        </section>
+        <section aria-labelledby="issuers-title">
+          <h2 id="issuers-title">Certificate issuers</h2>
+          <div class="table-wrap"><table id="issuers"></table></div>
+        </section>
+      </div>
+
+      <div class="actions">
+        <button type="button" id="copy-link">Copy link to this lookup</button>
+        <button type="button" id="dl-md">Download report (.md)</button>
+        <button type="button" id="dl-json">Download data (.json)</button>
+      </div>
+    </div>
+
+    <aside aria-label="Privacy and sources"><strong>What leaves your browser.</strong> The domain you enter is sent directly from your browser to IANA (to find the right registry), the registry's RDAP service (for .ca, CIRA's), crt.sh and the Internet Archive. Nothing is sent to coolcode.ca and nothing is stored. RDAP shows only what the registry publishes today, so earlier registrars and owners are not shown unless an event records them. Certificate logs start around 2013, and archive coverage varies.</aside>
   </main>
   <footer>Part of <a href="https://coolcode.ca/">the CoolCode collection</a>. {{ISSUE_LINK}}</footer>
 </body>

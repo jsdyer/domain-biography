@@ -1,47 +1,39 @@
-# CoolCode browser tool template
+# Domain Biography
 
-A starting point for independent tools at `coolcode.ca/<repo>/`: a working local-text
-example, responsive UI, Python standard-library build, Node tests, PR checks and Pages
-publication. No npm install is needed.
+Follow a domain's life on one timeline, at **https://coolcode.ca/domain-biography/**: when it was registered, transferred and changed at the registry, when certificates were first and last issued (and by whom), when the Wayback Machine first and last captured it, and the quiet years in between.
 
-## Using the example
+| Source | What it adds | How |
+|---|---|---|
+| IANA RDAP bootstrap, then the registry's RDAP service (CIRA for .ca) | Registration, transfer, last-changed and expiry events; registrar; status; nameservers; DNSSEC | Live, from your browser |
+| crt.sh certificate transparency search | First and latest logged certificates, certificates per year, each issuer's first and last use | Live, from your browser |
+| Internet Archive Wayback CDX (falls back to the availability API) | First and latest captures and months with captures per year | Live, from your browser |
+
+## Reading the results
 
 <!-- coolcode:guide -->
-The first occurrence of each trimmed line keeps its place. Compare the output with the original text before copying the result.
+Enter a domain such as cira.ca, or paste a full URL. A subdomain is looked up under its registered name at the registry. The timeline marks each event with its source. A quiet period means two or more years in which no source recorded anything, which often points to a parked, lapsed or re-registered domain. Compare that span with the registration date: a "Registered" date after the first archive capture usually means the name expired and someone registered it again. Use "Copy link" to share a lookup, or download the report as Markdown or JSON.
 <!-- /coolcode:guide -->
 
-For a real tool, replace this paragraph with one or two plain-text sentences
-about an example, a limit or how to interpret the results. Keep the source,
-coverage, refresh behaviour and a worked example in this README as appropriate.
-When updating a tool, revise any details its behaviour has changed and keep the
-homepage's shorter data-source sentence in `tool.json` accurate.
-The hub imports the marked note into the catalogue README.
+- **RDAP shows the registry's current record.** Earlier registrars and owners appear only if an event (such as a transfer) records them, and registries publish different event types. "Registry record changed" can mean any update, such as nameservers, status or contacts.
+- **Certificate logs** begin around 2013, and many older sites never used TLS. By default only certificates naming the domain itself are counted. Tick **Include subdomain certificates** to add `%.domain`; large sites can return tens of thousands of rows and may time out.
+- **Archive counts are months with at least one capture**, not total captures. If the CDX service is busy, only the first and latest captures are shown, and the source chip says so.
 
-## One-time template setup
+## Expand or customize
 
-Enable **Settings → General → Template repository** here. This repository does not
-need Pages enabled: its workflow builds/tests but intentionally skips deployment.
-New copies also skip deployment until `scripts/init.py` sets the tool ID to match
-their repository name. This lets you create the repo before configuring Pages.
+Settings live in **`web/config.json`**:
 
-## Start a new tool
+| Key | Meaning |
+|---|---|
+| `examples` | Quick-pick domains shown under the search box. Any valid domain works; these are just shortcuts. |
+| `sources.<name>.enabled` | Turn the registry, certificate or archive lookup on or off. |
+| `sources.*.timeout_ms` | Per-source time limits. |
+| `sources.certificates.max_rows` | Refuse very large certificate result sets (default 20,000). |
+| `sources.archive.max_months` | Upper bound on CDX rows (one per month). |
+| `quiet_years_min` | Minimum run of silent years to mark as a quiet period (default 2). |
 
-1. Select **Use this template → Create a new repository**, choose owner `jsdyer`,
-   a unique lowercase name such as `my-tool`, and public visibility.
-2. Clone the new repository. Use Python 3.12+ and Node 24+.
-3. Set the identity, using a slug that matches the repository name:
+For example, to add `gov.nl.ca` as a quick pick, append it to `examples`. There is no data refresh: every lookup is live, so a push to `main` (tests, build, deploy) is all that's needed. `tests/model.test.mjs` checks examples beyond the starter list.
 
-```sh
-python3 scripts/init.py my-tool --title "My Tool" --description "Describe what this tool does."
-```
-
-Review the category, tags and icon in `tool.json`. `access: "browser"` tells the main
-catalogue that the tool works immediately without installation. `--owner` supports a different
-GitHub owner, but only projects owned by `jsdyer` inherit the CoolCode domain.
-
-4. Replace the example in `web/` and its tests. Update the privacy explanation,
-   source attribution and README to describe the real tool.
-5. Test and preview:
+## Develop and test
 
 ```sh
 node --test tests/*.test.mjs
@@ -50,85 +42,10 @@ python3 scripts/build.py
 python3 -m http.server 8000 --directory dist
 ```
 
-Open `http://localhost:8000/`. The example trims lines, skips blanks and removes exact
-duplicates, preserving first-seen order and capitalization. It processes the text in tab memory. Update that explanation if your app behaves differently.
+`tests/browser_smoke.py` serves the build at `/domain-biography/` and answers every external request from `tests/fixtures/`. It covers a subdomain lookup, the timeline, quiet periods, registry text containing markup, Markdown export, a shared link, the fallback when CDX and RDAP fail, and the mobile layout.
 
-CI also tests the browser flow and mobile layout at a project subpath. Replace the
-sample assertions in `tests/browser_smoke.py` when implementing your own UI. To run
-that check locally (optional for ordinary preview):
+## Publish
 
-```sh
-python3 -m venv .venv
-. .venv/bin/activate
-python3 -m pip install -r tests/browser-requirements.txt
-python3 -m playwright install --with-deps chromium
-python3 tests/browser_smoke.py
-```
+Settings → Pages → Source → **GitHub Actions**. Successful `main` builds deploy to `https://coolcode.ca/domain-biography/`. The catalogue record is in `tool.json`.
 
-Playwright is a test-only dependency; the app and its static build do not use it.
-
-## Expand or customize
-
-Every implemented tool should replace this section with its actual configuration
-path and a working example. A small `config.json` can hold default entities,
-query presets, source choices and request limits. Those defaults should be useful
-starting points, while visitors can enter other valid inputs whenever the source
-supports them. Keep provider limits explicit and separate from the starter list.
-
-Derive counts, filters and item validation from the current data. Do not require
-exactly the initial number of items. Add a test that expands the configuration,
-and keep historical captures readable when their coverage differs from today's
-watchlist. Display the selected capture date accurately.
-
-Document which changes need only a normal code push and which also need a data
-refresh. Include the refresh command or exact GitHub workflow and input, followed
-by the publication step. A successful code build need not mean a new collection
-has been fetched. The starter itself has no external collection or refresh.
-
-## Publish and register
-
-When the actual tool is ready, in the **new tool repository** set **Settings → Pages → Build and deployment →
-Source → GitHub Actions**. Push to `main`, or manually run **Browser tool · Check and
-publish** after enabling Pages. If the initial deployment ran before Pages was enabled,
-enable it and rerun. PRs only check/build and provide a downloadable preview artifact.
-
-Keep `{{VISIT_COUNTER}}` in the page head and `{{ISSUE_LINK}}` in the footer when replacing the starter UI. The build enables these for initialized CoolCode repositories. The shared counter records aggregate opens on coolcode.ca by public tool ID. Toolbox inputs and URL parameters are excluded. The issue link opens a reporting form with the tool already selected.
-
-Keep app-owned asset paths and module imports relative. Check `https://coolcode.ca/my-tool/`.
-Do not add a CNAME or set `coolcode.ca` as this project's custom domain; the account
-site supplies it. Only successful `main` builds deploy.
-
-After verifying the app, copy the reviewed object from `tool.json` into `data/tools.json`
-in [the main site](https://github.com/jsdyer/jsdyer.github.io). Each tool still builds
-independently. Update the hub record when listing metadata changes; the hub is the
-authority for discovery. Ordinary app updates touch only this repository.
-
-The main site separates **Use in your browser** from **Install yourself**. An app
-that asks for a file is still a browser tool. Standalone Linux packages should start
-in their own repositories with their own build/release workflow, rather than copying
-this browser-only scaffold. Their hub record uses `access: "install"`, links to an
-installation guide, and includes `requirements`.
-
-## Files
-
-| Path | Purpose |
-| --- | --- |
-| `tool.json` | Page metadata and a ready-to-copy catalogue record |
-| `web/` | HTML, responsive CSS, DOM interactions and separate model logic |
-| `scripts/build.py` | Escape metadata and build `web/` into `dist/` |
-| `scripts/init.py` | Set a new project's identity |
-| `tests/` | Application and builder tests |
-| `.github/workflows/pages.yml` | Check PRs and publish successful main builds |
-| `AGENTS.md` | Instructions for future coding work |
-
-Namespace optional storage as `coolcode:<tool-id>:<key>`; CoolCode paths share a
-browser origin. Don't save pasted text/uploads by default. Document external APIs
-and send only the information needed for the selected action. Never embed secrets.
-
-Scheduled refresh is opt-in. Validate source data before deploying, display its date,
-and preserve the last good deployment on failure. Public-repository schedules can
-stop after 60 days without repository activity.
-
-Templates don't propagate future edits automatically. Adopt fixes explicitly and
-consider a versioned reusable workflow once several tools confirm the shared process.
-Choose and add the intended software license before distributing a new project.
+Sources: [IANA RDAP bootstrap](https://data.iana.org/rdap/dns.json), [crt.sh](https://crt.sh/), [Internet Archive Wayback Machine](https://web.archive.org/).

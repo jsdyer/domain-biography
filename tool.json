@@ -1,16 +1,27 @@
 {
-  "id": "coolcode-tool-template",
-  "title": "CoolCode Tool Starter",
-  "description": "A browser-only example that trims lines and removes exact duplicates.",
-  "category": "security",
-  "tags": ["text", "lines", "duplicates"],
-  "icon": "scan-search",
-  "url": "/coolcode-tool-template/",
-  "source": "https://github.com/jsdyer/coolcode-tool-template",
+  "id": "domain-biography",
+  "title": "Domain Biography",
+  "description": "Follow a domain's life from registration through certificates and archived captures, with transfers, changes and quiet years on one timeline.",
+  "category": "liminal-tools",
+  "tags": [
+    "domains",
+    "rdap",
+    "whois",
+    "cira",
+    ".ca",
+    "certificates",
+    "crt.sh",
+    "wayback",
+    "history",
+    "registrar"
+  ],
+  "icon": "history",
+  "url": "/domain-biography/",
+  "source": "https://github.com/jsdyer/domain-biography",
   "hosting": "project",
   "access": "browser",
   "data_info": {
-    "mode": "local",
-    "detail": "The browser reads the text you paste and compares its lines."
+    "mode": "live",
+    "detail": "Your browser asks IANA's RDAP registry, crt.sh certificate logs and the Wayback Machine directly when you look up a domain."
   }
 }
