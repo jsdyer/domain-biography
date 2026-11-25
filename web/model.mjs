@@ -114,6 +114,7 @@ export function parseCdx(payload) {
   const rows=Array.isArray(envelope)?envelope:envelope?.rows;
   if(!Array.isArray(rows))throw Error('Expected Wayback CDX JSON.');
   const header=rows[0]||[],hasHeader=Array.isArray(header)&&header.includes('timestamp');
+  if(rows.length&&!hasHeader)throw Error('Unexpected Wayback CDX header.');
   const body=hasHeader?rows.slice(1):rows;
   const index=k=>hasHeader?header.indexOf(k):-1;
   const byYear={},months=new Set(),seen=new Set();let first=null,latest=null,firstUrl=null,latestUrl=null,count=0;
@@ -153,13 +154,15 @@ export function archiveRange(from,to){
  if(!valid(from)||!valid(to)||from&&to&&from>to)throw Error('Use archive years from 1990 through the current year, with the start no later than the end.');
  return {from:from||'',to:to||''};
 }
+const safeReplay=url=>{try{const u=new URL(url);if(u.hostname==='web.archive.org'&&!u.username&&!u.password&&/^\/web\/\d{14}\//.test(u.pathname))return u.href.replace(/^http:/,'https:');}catch{}return null;};
+
 /** Fallback when CDX is unavailable: two availability-API answers (closest to 1996 and to now). */
 export function archiveFromAvailability(earliest, newest) {
   const pick = (r) => r?.archived_snapshots?.closest;
   const a = pick(earliest), b = pick(newest);
-  const first = a?.available ? tsToIso(a.timestamp) : null;
-  const latest = b?.available ? tsToIso(b.timestamp) : first;
-  return { first, latest, monthsWithCaptures: null, byYear: {}, method: 'available', truncated: true, count: null, firstUrl: a?.url || null, latestUrl: b?.url || null };
+  const first = a?.available && String(a.status)==='200' ? tsToIso(a.timestamp) : null;
+  const latest = b?.available && String(b.status)==='200' ? tsToIso(b.timestamp) : first;
+  return { first, latest, monthsWithCaptures: null, byYear: {}, method: 'available', truncated: true, count: null, firstUrl: safeReplay(a?.url), latestUrl: safeReplay(b?.url) };
 }
 
 export const waybackCalendar = (domain) => `https://web.archive.org/web/*/${domain}`;

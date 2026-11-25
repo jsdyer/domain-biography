@@ -120,3 +120,9 @@ test('archive ranges validate order and dates and change inference completeness'
  const archive=M.parseCdx(fx('cdx.json'));archive.range={from:'2000',to:'2005'};
  assert.deepEqual(M.activityByYear({rdap:M.parseRdap(fx('rdap-ca.json')),certs:M.parseCertificates(fx('crt.json')),archive},NOW).quiet,[]);
 });
+
+test('malformed CDX headers and unsafe availability replay URLs do not become source evidence',()=>{
+ assert.throws(()=>M.parseCdx([['unexpected'],['20000101000000']]),/header/);
+ const a=M.archiveFromAvailability({archived_snapshots:{closest:{available:true,status:'200',timestamp:'20000101000000',url:'https://evil.example/'}}},{});assert.equal(a.firstUrl,null);
+ const b=M.archiveFromAvailability({archived_snapshots:{closest:{available:true,status:'404',timestamp:'20000101000000',url:'https://web.archive.org/web/20000101000000/http://example.ca/'}}},{});assert.equal(b.first,null);
+});
