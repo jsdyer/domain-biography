@@ -1,14 +1,29 @@
 {
-  "examples": ["cira.ca", "coolcode.ca", "canada.ca", "dal.ca"],
+  "examples": [
+    "cira.ca",
+    "coolcode.ca",
+    "canada.ca",
+    "dal.ca"
+  ],
   "sources": {
-    "rdap": { "enabled": true, "bootstrap": "https://data.iana.org/rdap/dns.json", "timeout_ms": 9000 },
-    "certificates": { "enabled": true, "endpoint": "https://crt.sh/", "timeout_ms": 30000, "max_rows": 20000 },
+    "rdap": {
+      "enabled": true,
+      "bootstrap": "https://data.iana.org/rdap/dns.json",
+      "timeout_ms": 9000
+    },
+    "certificates": {
+      "enabled": true,
+      "endpoint": "https://crt.sh/",
+      "timeout_ms": 30000,
+      "max_rows": 20000
+    },
     "archive": {
       "enabled": true,
       "cdx": "https://web.archive.org/cdx/search/cdx",
       "available": "https://archive.org/wayback/available",
       "timeout_ms": 25000,
-      "max_months": 1200
+      "proxy": "https://coolcode-visitor-api.jeffdyer.workers.dev/api/domain-biography/archive",
+      "max_rows": 2500
     }
   },
   "quiet_years_min": 2

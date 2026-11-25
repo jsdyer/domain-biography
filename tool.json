@@ -1,7 +1,7 @@
 {
   "id": "domain-biography",
   "title": "Domain Biography",
-  "description": "Follow a domain's life from registration through certificates and archived captures, with transfers, changes and quiet years on one timeline.",
+  "description": "Trace registry dates, certificate history, yearly archived homepage captures and old about/contact pages for a domain.",
   "category": "liminal-tools",
   "tags": [
     "domains",
@@ -22,6 +22,6 @@
   "access": "browser",
   "data_info": {
     "mode": "live",
-    "detail": "Your browser asks IANA's RDAP registry, crt.sh certificate logs and the Wayback Machine directly when you look up a domain."
+    "detail": "Current registry RDAP, certificate transparency and bounded Wayback archive observations; incomplete sources are labelled."
   }
 }

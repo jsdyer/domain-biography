@@ -11,7 +11,7 @@
 </head>
 <body data-tool-id="{{TOOL_ID}}">
   <a class="skip" href="#main">Skip to content</a>
-  <header><a href="https://coolcode.ca/">← CoolCode.ca</a><a href="{{SOURCE_URL}}">Source &amp; instructions ↗</a></header>
+  <header><a href="https://coolcode.ca/">CoolCode.ca</a><a href="{{SOURCE_URL}}">Source &amp; instructions</a></header>
   <main id="main">
     <p class="eyebrow">Networks &amp; routing · registry, certificate and archive records</p>
     <h1>{{TITLE}}</h1>
@@ -26,7 +26,7 @@
           <button type="submit">Trace history</button>
         </div>
         <label class="check"><input type="checkbox" id="subdomains"> Include subdomain certificates <span class="hint">(slower on large sites)</span></label>
-        <p class="examples" id="examples"></p>
+        <div class="row years"><label>Archive start year (optional)<input id="from-year" type="number" min="1990" max="2100" placeholder="Earliest"></label><label>Archive end year (optional)<input id="to-year" type="number" min="1990" max="2100" placeholder="Latest"></label></div><p class="examples" id="examples"></p>
       </form>
       <p id="status" role="status" aria-live="polite"></p>
       <noscript><p>This tool needs JavaScript to query the registry, certificate logs and the Wayback Machine.</p></noscript>
@@ -46,12 +46,13 @@
 
       <section aria-labelledby="years-title">
         <h2 id="years-title">Activity by year</h2>
-        <p class="small">Certificates logged per year, and months with at least one Wayback capture. A quiet period is two or more years in which none of the sources recorded anything.</p>
+        <p class="small">Certificates and observed homepage captures per year. Missing data is not evidence of inactivity. Quiet periods appear only when all three sources returned a complete, unrestricted result.</p>
         <div class="chart" id="chart"></div>
-        <p class="legend"><span><i class="dot certs"></i>Certificates</span><span><i class="dot caps"></i>Months with captures</span><span><i class="dot quiet"></i>Quiet period</span></p>
+        <p class="legend"><span><i class="dot certs"></i>Certificates</span><span><i class="dot caps"></i>Observed captures</span><span><i class="dot quiet"></i>Quiet period</span></p>
         <p id="quiet" class="small"></p>
       </section>
 
+      <section aria-labelledby="archive-title"><h2 id="archive-title">Archived homepage counts</h2><p id="archive-note"></p><div class="table-wrap"><table id="archive-years"></table></div><h3>Old about and contact pages</h3><p id="pages-note"></p><ul id="archive-pages"></ul></section><section id="ca-history" hidden><h2>Reading a .ca history</h2><p id="ca-detail"></p><p><a href="https://www.cira.ca/en/ca-domains/whois/">CIRA’s domain lookup</a> · <a href="https://www.cira.ca/en/resources/news/domains/domain-registration-tips-cira-whois-privacy/">CIRA’s explanation of registration privacy</a></p></section><section><h2>Continue the investigation</h2><p id="investigation-domain"></p><ul id="investigation"></ul></section>
       <div class="pair">
         <section aria-labelledby="registry-title">
           <h2 id="registry-title">Registry record</h2>
@@ -70,7 +71,7 @@
       </div>
     </div>
 
-    <aside aria-label="Privacy and sources"><strong>What leaves your browser.</strong> The domain you enter is sent directly from your browser to IANA (to find the right registry), the registry's RDAP service (for .ca, CIRA's), crt.sh and the Internet Archive. Nothing is sent to coolcode.ca and nothing is stored. RDAP shows only what the registry publishes today, so earlier registrars and owners are not shown unless an event records them. Certificate logs start around 2013, and archive coverage varies.</aside>
+    <aside aria-label="Privacy and sources"><strong>What leaves your browser.</strong> Your domain is sent to the registry’s RDAP service, crt.sh, and Internet Archive through CoolCode’s cached archive gateway. IANA receives a generic bootstrap request without the domain. Archive queries may be cached for six hours. Availability fallbacks go directly to Internet Archive. Your lookup is encoded in the shareable page URL; no lookup history is saved in this browser. RDAP shows only what the registry publishes today, so earlier registrars and owners are not shown unless an event records them. Certificate logs start around 2013, and archive coverage varies.</aside>
   </main>
   <footer>Part of <a href="https://coolcode.ca/">the CoolCode collection</a>. {{ISSUE_LINK}}</footer>
 </body>

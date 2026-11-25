@@ -66,8 +66,8 @@ test('timeline merges sources, hides registry housekeeping and flags future expi
   const archive = M.parseCdx(fx('cdx.json'));
   const t = M.buildTimeline({ rdap, certs, archive }, NOW);
   assert.deepEqual(t.map((x) => x.label), [
-    'First Wayback Machine capture', 'Registered', 'First logged TLS certificate', 'Transferred',
-    'New certificate issuer', 'Registry record changed', 'Most recent certificate', 'Latest Wayback Machine capture', 'Registration expires',
+    'Earliest observed homepage capture', 'Registered', 'First logged TLS certificate', 'Transferred',
+    'New certificate issuer', 'Registry record changed', 'Most recent certificate', 'Latest observed homepage capture', 'Registration expires',
   ]);
   assert.equal(t.at(-1).future, true);
   assert.ok(!t.some((x) => /rdap database/i.test(x.label)));
@@ -84,7 +84,7 @@ test('quiet periods need two silent years and respect missing archive counts', (
   assert.deepEqual(a.quiet, [{ from: 2006, to: 2011 }, { from: 2016, to: 2018 }]);
   const fallback = M.archiveFromAvailability(fx('avail-first.json'), fx('avail-latest.json'));
   const b = M.activityByYear({ rdap, certs, archive: fallback }, NOW, 2);
-  assert.deepEqual(b.quiet, [{ from: 2005, to: 2013 }, { from: 2016, to: 2018 }]);
+  assert.deepEqual(b.quiet, []);assert.equal(b.years[0].captures,null);
 });
 
 test('markdown export lists registry, timeline and quiet periods', () => {
@@ -102,4 +102,21 @@ test('configured examples are valid domains, and any extra example works the sam
   const config = JSON.parse(readFileSync(new URL('../web/config.json', import.meta.url), 'utf8'));
   for (const d of [...config.examples, 'gov.nl.ca', 'xn--bcher-kva.example']) assert.equal(M.normalizeDomain(d), d);
   assert.ok(config.sources.certificates.max_rows > 0 && config.quiet_years_min >= 1);
+});
+
+test('actual CDX observations count multiple captures in one month and deduplicate exact rows',()=>{
+ const rows=[['timestamp','original','statuscode','mimetype'],['20000102030405','http://example.ca/','200','text/html'],['20000103030405','http://example.ca/','200','text/html'],['20000103030405','http://example.ca/','200','text/html'],['20000230030405','http://example.ca/','200','text/html'],['20000104030405','http://example.ca/','404','text/html']];
+ const result=M.parseCdx({data:{rows,truncated:true}});
+ assert.equal(result.count,2);assert.equal(result.monthsWithCaptures,1);assert.equal(result.byYear['2000'],2);assert.equal(result.truncated,true);assert.match(result.latestUrl,/20000103030405/);
+ assert.deepEqual(M.activityByYear({rdap:{events:[]},certs:{byYear:{}},archive:result},NOW).quiet,[]);
+});
+test('archived about/contact candidates stay within the requested host and never open live pages',()=>{
+ const rows=[['timestamp','original','statuscode','mimetype'],['20000102030405','http://www.example.ca/about.html','200','text/html'],['20000103030405','http://example.ca/contact-us/','200','text/html'],['20000104030405','https://evil.example/contact','200','text/html'],['20000105030405','https://example.ca/news','200','text/html']];
+ const parsed=M.parseArchivePages({data:{rows,truncated:true}},'example.ca');assert.equal(parsed.items.length,2);assert.ok(parsed.items.every(p=>p.url.startsWith('https://web.archive.org/web/')));assert.equal(parsed.truncated,true);
+});
+test('archive ranges validate order and dates and change inference completeness',()=>{
+ assert.deepEqual(M.archiveRange('2000','2004'),{from:'2000',to:'2004'});
+ for(const r of [['x','2001'],['2001','2000'],['1980',''],['','2999']])assert.throws(()=>M.archiveRange(...r));
+ const archive=M.parseCdx(fx('cdx.json'));archive.range={from:'2000',to:'2005'};
+ assert.deepEqual(M.activityByYear({rdap:M.parseRdap(fx('rdap-ca.json')),certs:M.parseCertificates(fx('crt.json')),archive},NOW).quiet,[]);
 });

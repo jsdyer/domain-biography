@@ -2,6 +2,7 @@
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+import json
 import shutil
 import tempfile
 import threading
@@ -33,10 +34,12 @@ def fake_network(page, cdx_ok=True, rdap_ok=True):
             body = (FIX / "rdap-ca.json").read_text()
         elif url.startswith("https://crt.sh/"):
             body = (FIX / "crt.json").read_text()
-        elif url.startswith("https://web.archive.org/cdx/"):
+        elif url.startswith("https://coolcode-visitor-api.jeffdyer.workers.dev/api/domain-biography/archive") or url.startswith("https://web.archive.org/cdx/"):
             if not cdx_ok:
                 return route.fulfill(status=503, body="busy")
-            body = (FIX / "cdx.json").read_text()
+            body = json.dumps({'data':{'rows':json.loads((FIX/'cdx.json').read_text()),'truncated':False}})
+            if 'mode=pages' in url:
+                body=json.dumps({'data':{'rows':[['timestamp','original','statuscode','mimetype'],['20000102030405','http://example-history.ca/about.html','200','text/html']],'truncated':False}})
         elif url.startswith("https://archive.org/wayback/available"):
             body = (FIX / ("avail-first.json" if "19960101" in url else "avail-latest.json")).read_text()
         if body is None:
@@ -80,6 +83,11 @@ def main():
                 assert "2006–2011" in page.locator("#quiet").inner_text()
                 assert page.locator("#chart rect.certs").count() == 25
                 assert page.locator("#issuers tbody tr").count() == 2
+                assert page.locator('#archive-years tbody tr').count()>0
+                assert '/about.html' in page.locator('#archive-pages').inner_text()
+                assert page.locator('#archive-pages a').first.get_attribute('href').startswith('https://web.archive.org/web/')
+                assert page.locator('#ca-history').is_visible()
+                assert page.locator('#investigation a').count()==3
                 # Registry text containing markup is shown as text.
                 assert "<b>Maple</b> Registrar Inc." in page.locator("#registry").inner_text()
                 assert page.locator("#registry b").count() == 0
@@ -98,8 +106,14 @@ def main():
                 page2.wait_for_function("document.querySelector('#status').textContent.startsWith('Retrieved')")
                 src = page2.locator("#sources").inner_text()
                 assert "availability API" in src and "registry: unavailable" in src, src
-                assert any("First Wayback" in t for t in page2.locator("#timeline li").all_inner_texts())
+                assert any("closest available Wayback" in t for t in page2.locator("#timeline li").all_inner_texts())
 
+                assert 'No quiet-period inference' in page2.locator('#quiet').inner_text()
+                page.fill('#from-year','2000');page.fill('#to-year','2004')
+                page.click('#lookup button[type=submit]')
+                page.wait_for_function("document.querySelector('#status').textContent.startsWith('Retrieved')")
+                assert 'from=2000' in page.url and 'to=2004' in page.url
+                assert 'Selected years: 2000 to 2004' in page.locator('#archive-note').inner_text()
                 # Validation message for an IP address.
                 page.fill("#domain", "192.0.2.10")
                 page.click("#lookup button[type=submit]")

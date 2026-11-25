@@ -101,36 +101,65 @@ export function issuerName(dn = '') {
   return (part('O') || part('CN') || String(dn) || 'Unknown issuer').trim();
 }
 
-const tsToIso = (ts) => {
-  const m = String(ts).match(/^(\d{4})(\d{2})(\d{2})?(\d{2})?(\d{2})?(\d{2})?/);
-  if (!m) return null;
-  return new Date(Date.UTC(+m[1], +m[2] - 1, +(m[3] || 1), +(m[4] || 0), +(m[5] || 0), +(m[6] || 0))).toISOString();
+export const tsToIso = (ts) => {
+  const v=String(ts);if(!/^\d{14}$/.test(v))return null;
+  const when=new Date(Date.UTC(+v.slice(0,4),+v.slice(4,6)-1,+v.slice(6,8),+v.slice(8,10),+v.slice(10,12),+v.slice(12,14)));
+  if(!Number.isFinite(+when)||when.toISOString().replace(/\D/g,'').slice(0,14)!==v)return null;
+  return when.toISOString();
 };
 
-/** Summarise Wayback CDX JSON (first row is the header) collapsed to one row per month. */
-export function parseCdx(rows) {
-  if (!Array.isArray(rows)) throw new Error('Expected Wayback CDX JSON.');
-  const body = rows.length && Array.isArray(rows[0]) && rows[0][0] === 'timestamp' ? rows.slice(1) : rows;
-  const byYear = {};
-  let first = null, latest = null, months = 0;
-  for (const row of body) {
-    const when = tsToIso(Array.isArray(row) ? row[0] : row.timestamp);
-    if (!when) continue;
-    months++;
-    byYear[when.slice(0, 4)] = (byYear[when.slice(0, 4)] || 0) + 1;
-    if (!first || when < first) first = when;
-    if (!latest || when > latest) latest = when;
+/** Counts actual indexed responses in a bounded exact-homepage query, never monthly samples. */
+export function parseCdx(payload) {
+  const envelope=payload?.data||payload;
+  const rows=Array.isArray(envelope)?envelope:envelope?.rows;
+  if(!Array.isArray(rows))throw Error('Expected Wayback CDX JSON.');
+  const header=rows[0]||[],hasHeader=Array.isArray(header)&&header.includes('timestamp');
+  const body=hasHeader?rows.slice(1):rows;
+  const index=k=>hasHeader?header.indexOf(k):-1;
+  const byYear={},months=new Set(),seen=new Set();let first=null,latest=null,firstUrl=null,latestUrl=null,count=0;
+  for(const row of body){
+    if(!Array.isArray(row))continue;
+    const stamp=row[hasHeader?index('timestamp'):0],when=tsToIso(stamp);if(!when)continue;
+    if(index('statuscode')>=0&&String(row[index('statuscode')])!=='200')continue;
+    if(index('mimetype')>=0&&!['text/html','application/xhtml+xml'].includes(row[index('mimetype')]))continue;
+    const original=index('original')>=0?row[index('original')]:null;
+    if(original&&!/^https?:\/\//i.test(original))continue;
+    const key=stamp+'|'+(original||'');if(seen.has(key))continue;seen.add(key);
+    const link=original?'https://web.archive.org/web/'+stamp+'/'+original:null;
+    count++;months.add(when.slice(0,7));byYear[when.slice(0,4)]=(byYear[when.slice(0,4)]||0)+1;
+    if(!first||when<first){first=when;firstUrl=link;}
+    if(!latest||when>latest){latest=when;latestUrl=link;}
   }
-  return { first, latest, monthsWithCaptures: months, byYear, method: 'cdx' };
+  return {first,latest,firstUrl,latestUrl,count,monthsWithCaptures:months.size,byYear,method:'cdx',truncated:!!envelope.truncated,checkedAt:envelope.checked_at||null,scope:'Exact homepage; successful HTML responses'};
 }
-
+export function parseArchivePages(payload,domain){
+ const envelope=payload?.data||payload,rows=envelope?.rows||[];
+ if(!Array.isArray(rows)||!Array.isArray(rows[0]))throw Error('Invalid archived page response');
+ const h=rows[0],ix=k=>h.indexOf(k);if(ix('timestamp')<0||ix('original')<0)throw Error('Invalid archived page schema');
+ const pages=new Map();
+ for(const row of rows.slice(1)){
+  const date=tsToIso(row[ix('timestamp')]);if(!date)continue;
+  let u;try{u=new URL(row[ix('original')]);}catch{continue;}
+  if(!['http:','https:'].includes(u.protocol)||u.username||u.password||u.hostname.replace(/^www\./,'')!==domain.replace(/^www\./,''))continue;
+  if(!/(?:^|\/)(?:about(?:[-_]us)?|contact(?:[-_]us)?|a-propos|nous-joindre)(?:[.\/]|$)/i.test(u.pathname))continue;
+  if(ix('statuscode')>=0&&String(row[ix('statuscode')])!=='200')continue;
+  const key=u.hostname+u.pathname;const prev=pages.get(key);
+  if(!prev||date<prev.date)pages.set(key,{original:u.href,path:u.pathname,date,url:'https://web.archive.org/web/'+row[ix('timestamp')]+'/'+u.href});
+ }
+ return {items:[...pages.values()].sort((a,b)=>a.date.localeCompare(b.date)),truncated:!!envelope.truncated};
+}
+export function archiveRange(from,to){
+ const valid=s=>!s||/^\d{4}$/.test(s)&&+s>=1990&&+s<=new Date().getUTCFullYear();
+ if(!valid(from)||!valid(to)||from&&to&&from>to)throw Error('Use archive years from 1990 through the current year, with the start no later than the end.');
+ return {from:from||'',to:to||''};
+}
 /** Fallback when CDX is unavailable: two availability-API answers (closest to 1996 and to now). */
 export function archiveFromAvailability(earliest, newest) {
   const pick = (r) => r?.archived_snapshots?.closest;
   const a = pick(earliest), b = pick(newest);
   const first = a?.available ? tsToIso(a.timestamp) : null;
   const latest = b?.available ? tsToIso(b.timestamp) : first;
-  return { first, latest, monthsWithCaptures: null, byYear: {}, method: 'available', firstUrl: a?.url || null, latestUrl: b?.url || null };
+  return { first, latest, monthsWithCaptures: null, byYear: {}, method: 'available', truncated: true, count: null, firstUrl: a?.url || null, latestUrl: b?.url || null };
 }
 
 export const waybackCalendar = (domain) => `https://web.archive.org/web/*/${domain}`;
@@ -162,8 +191,8 @@ export function buildTimeline({ rdap, certs, archive }, now = new Date()) {
     if (certs.issuers.length > 1 && i.first !== certs.first?.date) items.push({ date: i.first, source: 'certificates', label: 'New certificate issuer', detail: i.issuer });
   }
   if (certs?.latest && certs.latest.date !== certs.first?.date) items.push({ date: certs.latest.date, source: 'certificates', label: 'Most recent certificate', detail: certs.latest.issuer });
-  if (archive?.first) items.push({ date: archive.first, source: 'archive', label: 'First Wayback Machine capture' });
-  if (archive?.latest && archive.latest !== archive.first) items.push({ date: archive.latest, source: 'archive', label: 'Latest Wayback Machine capture' });
+  if (archive?.first) items.push({ date: archive.first, source: 'archive', label: archive.method==='available'?'Earlier closest available Wayback capture':'Earliest observed homepage capture', url:archive.firstUrl });
+  if (archive?.latest && archive.latest !== archive.first) items.push({ date: archive.latest, source: 'archive', label: archive.method==='available'?'Recent closest available Wayback capture':archive.truncated?'Latest in bounded homepage sample':'Latest observed homepage capture', url:archive.latestUrl });
   return items.sort((a, b) => a.date.localeCompare(b.date) || a.source.localeCompare(b.source));
 }
 
@@ -180,12 +209,12 @@ export function activityByYear({ certs, archive, rdap }, now = new Date(), quiet
   const years = [];
   for (let y = start; y <= end; y++) {
     const k = String(y);
-    years.push({ year: y, certificates: certs?.byYear?.[k] || 0, captureMonths: archive?.byYear?.[k] || (archiveYears.has(k) ? 1 : 0), registry: regYears.has(k) });
+    years.push({ year: y, certificates: certs?.byYear?.[k] || 0, captures: archive?.method==='cdx'?(archive.byYear?.[k]||0):null, registry: regYears.has(k) });
   }
   const quiet = [];
   let run = null;
   for (const y of years) {
-    const silent = y.certificates === 0 && y.captureMonths === 0 && !y.registry && y.year < end;
+    const silent = !!certs && !!rdap && archive?.method==='cdx' && !archive.truncated && !archive.range?.from && !archive.range?.to && y.certificates === 0 && y.captures === 0 && !y.registry && y.year < end;
     if (silent) run = run ? { ...run, to: y.year } : { from: y.year, to: y.year };
     else { if (run && run.to - run.from + 1 >= quietMin) quiet.push(run); run = null; }
   }
@@ -202,6 +231,8 @@ export function toMarkdown(domain, bio, generated = new Date()) {
   }
   lines.push('## Timeline');
   for (const t of bio.timeline) lines.push(`- ${t.date.slice(0, 10)} — ${t.label}${t.detail ? ` (${t.detail})` : ''} [${t.source}]`);
+  if(bio.archive?.count!==null&&bio.archive?.count!==undefined){lines.push('', '## Archived homepage observations', bio.archive.truncated?'Bounded sample: counts are lower bounds, not full site totals.':'Successful HTML responses at the exact homepage only.', '| Year | Observed captures |','|---|---:|',...Object.entries(bio.archive.byYear).sort().map(([y,n])=>`| ${y} | ${n} |`));}
+  if(bio.archive?.pages?.items?.length)lines.push('', '## Archived about/contact pages',...bio.archive.pages.items.map(p=>`- ${p.date.slice(0,10)} [${p.path}](${p.url})`));
   if (bio.activity?.quiet?.length) lines.push('', '## Quiet periods', ...bio.activity.quiet.map((q) => `- ${q.from}${q.to !== q.from ? `–${q.to}` : ''}: no certificates, captures or registry events found`));
   lines.push('', '## Sources', ...Object.entries(bio.sources || {}).map(([k, v]) => `- ${k}: ${v}`));
   return lines.join('\n') + '\n';
