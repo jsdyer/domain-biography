@@ -11,10 +11,13 @@ Follow a domain's life on one timeline, at **https://coolcode.ca/domain-biograph
 ## Reading the results
 
 <!-- coolcode:guide -->
+Compare dated registry events, archived homepage captures and certificate history for a website. Start with the Canadian domain example or enter a hostname.
+<!-- /coolcode:guide -->
+
 The [Canadian domain history example](https://coolcode.ca/domain-biography/canadian-domain-history/) opens the same editable investigation with cira.ca selected. Pasting a website URL uses its hostname. Compare archive observations with registry events and check the business separately before paying.
 
 Enter a domain such as cira.ca, or paste a full URL. Compare its current registry dates with dated archive observations and certificate history. The archive section counts actual successful HTML responses at the exact homepage, and lists archived about/contact pages to inspect. For a busy site, narrow the optional year range; capped counts are labelled lower bounds. Capture dates are not registration or launch dates, and a gap is not proof of inactivity. Continue to Scan Receipt, Scam Trace or Corporate Ghosts for different investigation questions. Copy the dated-range lookup link or export the results as Markdown/JSON.
-<!-- /coolcode:guide -->
+
 
 - **RDAP shows the registry's current record.** Earlier registrars and owners appear only if an event (such as a transfer) records them, and registries publish different event types. "Registry record changed" can mean any update, such as nameservers, status or contacts.
 - **Certificate logs** begin around 2013, and many older sites never used TLS. By default only certificates naming the domain itself are counted. Tick **Include subdomain certificates** to add `%.domain`; large sites can return tens of thousands of rows and may time out.
