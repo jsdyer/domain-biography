@@ -13,8 +13,8 @@
   <a class="skip" href="#main">Skip to content</a>
   <header><a href="https://coolcode.ca/">CoolCode.ca</a><a href="{{SOURCE_URL}}">Source &amp; instructions</a></header>
   <main id="main">
-    <p class="eyebrow">Networks &amp; routing · registry, certificate and archive records</p>
-    <h1>{{TITLE}}</h1>
+    <p class="eyebrow">Domain Biography</p>
+    <h1>{{TITLE}}</h1><!-- example-intro -->
     <p class="intro">{{DESCRIPTION}}</p>
 
     <section aria-labelledby="lookup-title">
@@ -22,16 +22,18 @@
       <form id="lookup" class="lookup">
         <label for="domain">Domain name</label>
         <div class="row">
-          <input id="domain" name="domain" autocomplete="off" spellcheck="false" placeholder="cira.ca" maxlength="260" required>
-          <button type="submit">Trace history</button>
+          <input id="domain" name="domain" autocomplete="off" spellcheck="false" placeholder="cira.ca or a website URL" value="cira.ca" maxlength="260" required>
+          <button type="submit">Check website history</button>
         </div>
-        <label class="check"><input type="checkbox" id="subdomains"> Include subdomain certificates <span class="hint">(slower on large sites)</span></label>
-        <div class="row years"><label>Archive start year (optional)<input id="from-year" type="number" min="1990" max="2100" placeholder="Earliest"></label><label>Archive end year (optional)<input id="to-year" type="number" min="1990" max="2100" placeholder="Latest"></label></div><p class="examples" id="examples"></p>
-      </form>
+        <details><summary>Certificate and archive options</summary><label class="check"><input type="checkbox" id="subdomains"> Include subdomain certificates <span class="hint">(slower on large sites)</span></label>
+        <div class="row years"><label>Archive start year (optional)<input id="from-year" type="number" min="1990" max="2100" placeholder="Earliest"></label><label>Archive end year (optional)<input id="to-year" type="number" min="1990" max="2100" placeholder="Latest"></label></div></details><p class="examples" id="examples"></p>
+      </form><nav class="preset-links" aria-label="Common uses"><a href="./canadian-domain-history/">Read a .ca domain history</a></nav>
       <p id="status" role="status" aria-live="polite"></p>
       <noscript><p>This tool needs JavaScript to query the registry, certificate logs and the Wayback Machine.</p></noscript>
     </section>
 
+    <section aria-labelledby="interpret"><h2 id="interpret">What to check before you buy</h2>
+<p>Compare the registration date and archived contact pages with the company’s claimed history. A recent registration, missing archive or valid HTTPS certificate cannot establish whether a seller will deliver. Verify the business name and contact details independently before paying.</p></section>
     <div id="result" hidden>
       <section aria-labelledby="summary-title">
         <h2 id="summary-title">At a glance</h2>

@@ -86,7 +86,22 @@ async function lookup(raw) {
   const subdomains = $('#subdomains').checked;
   $('#domain').value = domain;
   setStatus(`Checking the registry, certificate logs and the Wayback Machine for ${domain}…`);
-  try { const u = new URL(location.href); u.searchParams.set('domain', domain); if (subdomains) u.searchParams.set('subdomains', '1'); else u.searchParams.delete('subdomains'); for(const [key,value]of Object.entries(range)){if(value)u.searchParams.set(key,value);else u.searchParams.delete(key);}history.replaceState(null, '', u); } catch { /* ignore */ }
+  try {
+    const preset = document.body.dataset.domain;
+    const u = new URL(location.href);
+    u.searchParams.set('domain', domain);
+    if (subdomains) u.searchParams.set('subdomains', '1');
+    else u.searchParams.delete('subdomains');
+    for (const [key,value] of Object.entries(range)) {
+      if (value) u.searchParams.set(key,value);
+      else u.searchParams.delete(key);
+    }
+    if (preset === domain && !subdomains && !range.from && !range.to) {
+      // Keep the complete example at its canonical public address.
+      u.search = '';
+    }
+    history.replaceState(null, '', u);
+  } catch { /* The lookup also works without a writable address bar. */ }
 
   const sources = {};
   const run = async (key, enabled, fn) => {
@@ -193,12 +208,13 @@ $('#copy-link').addEventListener('click', async (ev) => {
 });
 
 try {
-  config = await (await fetch('./config.json')).json();
+  config = await (await fetch(new URL('./config.json', import.meta.url))).json();
   $('#examples').replaceChildren('Try: ', ...config.examples.map((d) => h('button', { type: 'button', class: 'quiet-btn', onclick: () => lookup(d) }, d)));
   const params = new URL(location.href).searchParams;
   for(const key of ['from','to'])$(`#${key}-year`).value=params.get(key)||'';
   if (params.get('subdomains') === '1') $('#subdomains').checked = true;
-  if (params.get('domain')) lookup(params.get('domain'));
+  const initialDomain = params.get('domain') || document.body.dataset.domain;
+  if (initialDomain) lookup(initialDomain);
 } catch (e) {
   setStatus('Configuration failed to load.', true);
   console.error(e);

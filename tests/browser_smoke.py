@@ -109,6 +109,7 @@ def main():
                 assert any("closest available Wayback" in t for t in page2.locator("#timeline li").all_inner_texts())
 
                 assert 'No quiet-period inference' in page2.locator('#quiet').inner_text()
+                page.locator('#lookup summary').click()
                 page.fill('#from-year','2000');page.fill('#to-year','2004')
                 page.click('#lookup button[type=submit]')
                 page.wait_for_function("document.querySelector('#status').textContent.startsWith('Retrieved')")

@@ -67,3 +67,6 @@ footer { border-top: 1px solid var(--line); padding-block: 1.5rem; }
 [hidden] { display: none !important; }
 @media (max-width: 44rem) { .pair { grid-template-columns: 1fr; } main { padding-block: 1.5rem; } .lookup .row { flex-direction: column; } }
 @media (prefers-color-scheme: dark) { :root { --paper: #17201c; --surface: #222d26; --ink: #f0efdf; --muted: #c3cfbc; --line: #64755d; --reg: #f2c14e; --certs: #7cc6dc; --caps: #6be3a0; --warn: #ff8a65; } }
+
+.preset-links,.lookup details{margin:.8rem 0}
+.lookup summary{cursor:pointer}

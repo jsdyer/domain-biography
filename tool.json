@@ -1,7 +1,7 @@
 {
   "id": "domain-biography",
-  "title": "Domain Biography",
-  "description": "Trace registry dates, certificate history, yearly archived homepage captures and old about/contact pages for a domain.",
+  "title": "Website History & Domain Check",
+  "description": "Check when a domain was registered, inspect past versions of its website and compare dated evidence before trusting an unfamiliar site.",
   "category": "liminal-tools",
   "tags": [
     "domains",
