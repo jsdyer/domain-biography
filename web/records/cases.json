@@ -1,0 +1,26 @@
+[
+ {
+  "slug": "truenorth-bet", "domain": "truenorth.bet", "title": "TrueNorth.bet website and licensing timeline",
+  "summary": "Follow an archived betting website from a 2021 homepage capture to the commission’s 2024 suspension and 2025 revocation of True North’s authorization.",
+  "context": "The December suspension names www.truenorth.bet. The August revocation names www.truenorthbets.com. The commission identifies True North in both decisions. A dated archive response can outlast a regulatory decision and cannot establish whether bets were accepted.",
+  "related": [["https://coolcode.ca/gamblingregulatorwatch/records/true-north-88b4e0aad9/", "Read the True North operator record and the interval between decisions"]],
+  "events": [
+    ["2021-07-10", "Archived homepage", "The Wayback CDX index lists a successful HTTPS capture of truenorth.bet. This is the earliest observation in the saved sample.", "https://web.archive.org/web/20210710142935/https://truenorth.bet/"],
+    ["2023-01-28", "Archived www hostname", "A later successful capture records the website at its www hostname.", "https://web.archive.org/web/20230128070313/https://www.truenorth.bet/"],
+    ["2024-12-23", "Authorization suspended", "Kahnawà:ke’s commission directed the site named in the notice, www.truenorth.bet, to cease offering interactive gaming effective that day.", "https://gamingcommission.ca/true-north-suspension-of-client-provider-authorization/"],
+    ["2025-08-17", "Later archive observation", "The Wayback availability index reports a successful response for truenorth.bet three days before the revocation took effect.", "https://web.archive.org/web/20250817143627/https://truenorth.bet/"],
+    ["2025-08-20", "Revocation effective", "The commission published this decision on August 21 and dated the revocation to August 20. The revocation page identifies www.truenorthbets.com.", "https://gamingcommission.ca/true-north-revocation-of-client-provider-authorization/"]
+  ]
+ },
+ {
+  "slug":"cira-ca","domain":"cira.ca","title":"CIRA.ca registration and early website history",
+  "summary":"Compare the registry’s 1998 registration date for cira.ca with a preserved 2005 homepage and a 2026 registry change.",
+  "context":"Registration records describe the domain in the registry. An archived homepage shows what the archive captured at a particular time. A registry change can update technical or administrative fields without changing the website.",
+  "related":[["https://coolcode.ca/domain-biography/canadian-domain-history/","Explore the Canadian domain history example"]],
+  "events":[
+    ["1998-02-05","Registry registration","The .ca RDAP service dates registration to February 5, 1998.","https://rdap.ca.fury.ca/rdap/domain/cira.ca"],
+    ["2005-01-02","Archived homepage","The Wayback availability index returns this January capture for the cira.ca homepage.","https://web.archive.org/web/20050102043441/http://cira.ca:80/"],
+    ["2026-08-19","Last changed in the saved registry observation","The registry returned this event when the record was checked on November 27, 2026. It does not identify which field changed.","https://rdap.ca.fury.ca/rdap/domain/cira.ca"]
+  ]
+ }
+]

@@ -12,6 +12,7 @@ Follow a domain's life on one timeline, at **https://coolcode.ca/domain-biograph
 
 <!-- coolcode:guide -->
 Compare dated registry events, archived homepage captures and certificate history for a website. Start with the Canadian domain example or enter a hostname.
+Follow the TrueNorth.bet timeline from archived pages to Kahnawà:ke’s decisions, or compare CIRA.ca’s registration with a preserved homepage. Each case cites dated evidence and links back to the editable lookup.
 <!-- /coolcode:guide -->
 
 The [Canadian domain history example](https://coolcode.ca/domain-biography/canadian-domain-history/) opens the same editable investigation with cira.ca selected. Pasting a website URL uses its hostname. Compare archive observations with registry events and check the business separately before paying.
@@ -59,3 +60,5 @@ python3 -m http.server 8000 --directory dist
 Settings → Pages → Source → **GitHub Actions**. Successful `main` builds deploy to `https://coolcode.ca/domain-biography/`. The catalogue record is in `tool.json`.
 
 Sources: [IANA RDAP bootstrap](https://data.iana.org/rdap/dns.json), [crt.sh](https://crt.sh/), [Internet Archive Wayback Machine](https://web.archive.org/).
+
+The saved case files in `web/records/cases.json` are editorial. Review dated official and archive evidence before adding events. A normal build renders the case directory, timelines and result sitemap. Visitor-requested lookups still query their live sources.

@@ -23,5 +23,9 @@
   "data_info": {
     "mode": "live",
     "detail": "Current registry RDAP, certificate transparency and bounded Wayback archive observations; incomplete sources are labelled."
+  },
+  "result_directory": {
+    "path": "records/",
+    "title": "Website history case files"
   }
 }

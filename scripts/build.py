@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Build a browser tool using Python's standard library; no network required."""
 from html import escape
+from cases import render as render_cases
 from search_pages import render_pages, PAGES
 import json
 from pathlib import Path
@@ -16,7 +17,7 @@ SLUG = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
 def metadata(root=ROOT):
     tool = json.loads((root / "tool.json").read_text(encoding="utf-8"))
     required = {"id", "title", "description", "category", "tags", "icon", "url", "source", "hosting", "access", "data_info"}
-    if not isinstance(tool, dict) or set(tool) != required:
+    if not isinstance(tool, dict) or set(tool) - {"result_directory"} != required:
         raise ValueError("tool.json has missing or unknown fields")
     for key in required - {"tags", "data_info"}:
         if not isinstance(tool[key], str) or not tool[key].strip():
@@ -76,6 +77,7 @@ def build(root=ROOT):
             raise ValueError("Unresolved template placeholder in web/index.html")
         index.write_text(page, encoding="utf-8")
         render_pages(stage, tool, PAGES)
+        render_cases(stage)
         (stage / ".nojekyll").touch()
         if output.exists():
             shutil.rmtree(output)
