@@ -1,12 +1,15 @@
 [
  {
-  "slug": "truenorth-bet", "domain": "truenorth.bet", "title": "TrueNorth.bet website and licensing timeline",
-  "summary": "Follow an archived betting website from a 2021 homepage capture to the commission’s 2024 suspension and 2025 revocation of True North’s authorization.",
-  "context": "The December suspension names www.truenorth.bet. The August revocation names www.truenorthbets.com. The commission identifies True North in both decisions. A dated archive response can outlast a regulatory decision and cannot establish whether bets were accepted.",
+  "slug": "truenorth-bet", "domain": "truenorth.bet", "title": "TrueNorth.bet trademark, website and licensing timeline",
+  "summary": "Trace the TrueNorth.bet name from a Canadian trademark filing in 2021 through archived homepages and Kahnawà:ke’s 2024 suspension and 2025 revocation decisions.",
+  "context": "The trademark register dates the claim to the name. The gaming commission records the operator’s authorization. Its December 2024 suspension names www.truenorth.bet, while its August 2025 revocation names www.truenorthbets.com. The commission identifies True North in both decisions. A dated archive response can outlast a regulatory decision and cannot establish whether bets were accepted.",
   "related": [["https://coolcode.ca/gamblingregulatorwatch/records/true-north-88b4e0aad9/", "Read the True North operator record and the interval between decisions"]],
   "events": [
+    ["2021-03-09", "Canadian trademark application filed", "The Canadian Intellectual Property Office (CIPO) records application 2,090,183 for the name TrueNorth.bet. The filing predates the first homepage capture in this timeline.", "https://ised-isde.canada.ca/cipo/trademark-search/2090183?lang=eng"],
     ["2021-07-10", "Archived homepage", "The Wayback CDX index lists a successful HTTPS capture of truenorth.bet. This is the earliest observation in the saved sample.", "https://web.archive.org/web/20210710142935/https://truenorth.bet/"],
+    ["2022-12-28", "Trademark application published", "Page 957 of Canada’s Trademarks Journal lists TrueNorth.bet under class 41 for online casino games and video games.", "https://publications.gc.ca/collections/collection_2022/opic-cipo/RG42-2-69-3557-eng.pdf#page=957"],
     ["2023-01-28", "Archived www hostname", "A later successful capture records the website at its www hostname.", "https://web.archive.org/web/20230128070313/https://www.truenorth.bet/"],
+    ["2023-03-15", "Canadian trademark registered", "CIPO registered the mark as TMA1171288. The register showed the status as registered when checked on November 27, 2026.", "https://ised-isde.canada.ca/cipo/trademark-search/2090183?lang=eng"],
     ["2024-12-23", "Authorization suspended", "Kahnawà:ke’s commission directed the site named in the notice, www.truenorth.bet, to cease offering interactive gaming effective that day.", "https://gamingcommission.ca/true-north-suspension-of-client-provider-authorization/"],
     ["2025-08-17", "Later archive observation", "The Wayback availability index reports a successful response for truenorth.bet three days before the revocation took effect.", "https://web.archive.org/web/20250817143627/https://truenorth.bet/"],
     ["2025-08-20", "Revocation effective", "The commission published this decision on August 21 and dated the revocation to August 20. The revocation page identifies www.truenorthbets.com.", "https://gamingcommission.ca/true-north-revocation-of-client-provider-authorization/"]

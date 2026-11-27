@@ -62,3 +62,5 @@ Settings → Pages → Source → **GitHub Actions**. Successful `main` builds d
 Sources: [IANA RDAP bootstrap](https://data.iana.org/rdap/dns.json), [crt.sh](https://crt.sh/), [Internet Archive Wayback Machine](https://web.archive.org/).
 
 The saved case files in `web/records/cases.json` are editorial. Review dated official and archive evidence before adding events. A normal build renders the case directory, timelines and result sitemap. Visitor-requested lookups still query their live sources.
+
+The TrueNorth.bet case file also cites Canadian trademark application 2,090,183 and the December 28, 2022 issue of the Trademarks Journal. Its trademark dates come from CIPO. Its gambling authorization dates come from the Kahnawà:ke Gaming Commission.
